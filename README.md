@@ -14,8 +14,8 @@ ValkeyJSON leverages [RapidJSON](https://rapidjson.org/), a high-performance JSO
 
 The default valkey version is "unstable". To override it, do:
 ```text
-# Build valkey-server (8.0.0) and run integration tests
-SERVER_VERSION=8.0.0 ./build.sh
+# Build valkey-server (8.0) and run integration tests
+SERVER_VERSION=8.0 ./build.sh
 ```
 
 Custom compiler flags can be passed to the build script via environment variable CFLAGS. For example:
@@ -35,7 +35,7 @@ The default valkey version is "unstable". To override it, do:
 ```text
 mdkir build
 cd build
-cmake .. -DVALKEY_VERSION=8.0.0
+cmake .. -DVALKEY_VERSION=8.0
 make
 ```
 
