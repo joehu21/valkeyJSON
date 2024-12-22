@@ -8,7 +8,7 @@
 #include <iostream>
 
 extern "C" {
-#include <./include/valkeymodule.h>
+#include <valkeymodule.h>
 }
 
 #define KEYTABLE_ASSERT ValkeyModule_Assert

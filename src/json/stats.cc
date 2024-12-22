@@ -7,7 +7,7 @@
 #include <sstream>
 extern "C" {
     #define VALKEYMODULE_EXPERIMENTAL_API
-    #include <./include/valkeymodule.h>
+    #include <valkeymodule.h>
 }
 
 #define STATIC /* decorator for static functions, remove so that backtrace symbols include these */

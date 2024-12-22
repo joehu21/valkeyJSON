@@ -48,7 +48,7 @@ class ReplyBuffer : public rapidjson::StringBuffer {
 
 extern "C" {
 #define VALKEYMODULE_EXPERIMENTAL_API
-#include <./include/valkeymodule.h>
+#include <valkeymodule.h>
 }
 
 /**

@@ -6,7 +6,7 @@
 
 extern "C" {
 #define VALKEYMODULE_EXPERIMENTAL_API
-#include <./include/valkeymodule.h>
+#include <valkeymodule.h>
 }
 
 void *dom_alloc(size_t size) {

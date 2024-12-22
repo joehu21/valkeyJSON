@@ -14,7 +14,7 @@
 
 extern "C" {
 #define VALKEYMODULE_EXPERIMENTAL_API
-#include <./include/valkeymodule.h>
+#include <valkeymodule.h>
 }
 
 typedef enum {

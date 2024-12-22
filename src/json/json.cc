@@ -33,7 +33,7 @@
 #include "json/alloc.h"
 #include "json/stats.h"
 #include "json/memory.h"
-#include "./include/valkeymodule.h"
+#include <valkeymodule.h>
 #include <string>
 #include <memory>
 #include <cmath>
