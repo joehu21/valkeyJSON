@@ -310,6 +310,78 @@ class TestJsonBasic(JsonTestCase):
                              (k8, 'false')]:                  # boolean
             assert value.encode() == client.execute_command('JSON.GET', key)
 
+    def test_json_mset_command_child_element(self):
+        """
+        Set a child element
+        """
+        client = self.server.get_new_client()
+
+        # set keys
+        for (key, val) in [
+            (k1, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}'),
+            (k2, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}'),
+            (k3, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}')
+        ]:
+            cmd = ['json.mset', key, '.', val]
+            assert b'OK' == client.execute_command(*cmd)
+
+        # mset
+        assert b'OK' == client.execute_command(
+            "JSON.MSET",
+            k1, ".firstName", '"Jack"',
+            k1, ".age", '30',
+            k2, "$.weight", '152.77',
+            k2, "$.address.city", '"Boston"',
+            k3, ".phoneNumbers[0].type", '"work"',
+        )
+
+        # verify
+        for (key, path, val) in [
+            (k1, ".firstName", '"Jack"'),
+            (k1, ".age", '30'),
+            (k2, "$.weight", '[152.77]'),
+            (k2, "$.address.city", '["Boston"]'),
+            (k3, ".phoneNumbers[0].type", '"work"')
+        ]:
+            assert val.encode() == client.execute_command('JSON.GET', key, path)
+
+    def test_json_mset_command_atomicity(self):
+        """
+        Test atomicity of json.set. If the command fails with syntax error for one key, all keys should be unchanged.
+        """
+        client = self.server.get_new_client()
+
+        # set keys
+        for (key, val) in [
+            (k1, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}'),
+            (k2, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}'),
+            (k3, '{"firstName":"John","lastName":"Smith","age":27,"weight":135.25,"isAlive":true,"address":{"street":"21 2nd Street","city":"New York","state":"NY","zipcode":"10021-3100"},"phoneNumbers":[{"type":"home","number":"212 555-1234"},{"type":"office","number":"646 555-4567"}],"children":[],"spouse":null}')
+        ]:
+            cmd = ['json.mset', key, '.', val]
+            assert b'OK' == client.execute_command(*cmd)
+
+        # mset: one of the args is invalid
+        with pytest.raises(ResponseError) as e:
+            client.execute_command(
+                "JSON.MSET",
+                k1, ".firstName", '"Jack"',
+                k1, ".age", '30',
+                k2, "$.weight", '152.77',
+                k2, "$.address.city", 'Boston', # invalid string value
+                k3, ".phoneNumbers[0].type", '"work"',
+            )
+        assert self.error_class.is_syntax_error(str(e.value))
+
+        # verify all keys are unchanged
+        for (key, path, value) in [
+            (k1, ".firstName", '"John"'),
+            (k1, ".age", '27'),
+            (k2, "$.weight", '[135.25]'),
+            (k2, "$.address.city", '["New York"]'),
+            (k3, ".phoneNumbers[0].type", '"home"')
+        ]:
+            assert value.encode() == client.execute_command('JSON.GET', key, path)
+
     def test_json_set_command_nx_xx_options(self):
         client = self.server.get_new_client()
         for (path, value, cond, exp_set_return, exp_get_return) in [

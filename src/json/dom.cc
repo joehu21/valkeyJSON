@@ -156,7 +156,7 @@ void dom_serialize_value(const JValue &val, const PrintFormat *format, rapidjson
 }
 
 JsonUtilCode dom_verify_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json,
-                           size_t new_val_size) {
+                              size_t new_val_size) {
     Selector selector;
     JsonUtilCode rc = selector.prepareSetValues(doc->GetJValue(), json_path);
     if (rc != JSONUTIL_SUCCESS) return rc;

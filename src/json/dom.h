@@ -245,21 +245,22 @@ void dom_serialize_value(const JValue &val, const PrintFormat *format, rapidjson
  */
 JValue& dom_get_value(JDocument &doc);
 
-/* Verify value at the path.
+/**
+ * Verify value at the path.
  * @param json_path: path that is compliant to the JSON Path syntax.
  * @param is_create_only - indicates to create a new value.
  * @param is_update_only - indicates to update an existing value.
  * @return JSONUTIL_SUCCESS for success, other code for failure.
  */
-JsonUtilCode dom_verify_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json, 
-                            size_t new_val_len);
-
+JsonUtilCode dom_verify_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json,
+                              size_t new_val_len);
 
 inline JsonUtilCode dom_verify_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json) {
     return dom_verify_value(ctx, doc, json_path, new_val_json, strlen(new_val_json));
 }
 
-/* Set value at the path.
+/**
+ * Set value at the path.
  * @param json_path: path that is compliant to the JSON Path syntax.
  * @param is_create_only - indicates to create a new value.
  * @param is_update_only - indicates to update an existing value.
@@ -267,7 +268,6 @@ inline JsonUtilCode dom_verify_value(ValkeyModuleCtx *ctx, JDocument *doc, const
  */
 JsonUtilCode dom_set_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json,
                            size_t new_val_len, const bool is_create_only = false, const bool is_update_only = false);
-
 
 inline JsonUtilCode dom_set_value(ValkeyModuleCtx *ctx, JDocument *doc, const char *json_path, const char *new_val_json,
                            const bool is_create_only = false, const bool is_update_only = false) {
